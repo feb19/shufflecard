@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" id="viewport">
+    <title>shufflecard</title>
+    <style>
+      body {
+        font-family: -apple-system, sans-serif;
+      }
+      button {
+        box-shadow: 0 16px 16px #5bbbb856;
+        -webkit-appearance: none;
+        border: none;
+        padding: 16px 24px;
+        color: white;
+        font-size: 16px;
+        border-radius: 36px;
+        background-color: #5bbbb7;
+        position: fixed;
+        bottom: 16px;
+        left: 0;
+        right: 0;
+        margin: auto;
+        width: 240px;
+        font-weight: bold;
+        outline: none;
+        cursor: pointer;
+      }
+      .form {
+        width: 300px;
+        height: 300px;
+        margin: auto;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      .form p {
+        font-size: 11px;
+        text-align: center;
+      }
+      textarea {
+        background: #dedede;
+        -webkit-appearance: none;
+        border: none;
+        border-radius: 8px;
+        width: 100%;
+        height: 80%;
+        font-size: 24px;
+        outline: none;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      .card {
+        display: inline-block;
+        width: 160px;
+        height: 160px;
+        border-radius: 16px;
+        background-color: #fdc82f;
+        padding: 16px;
+        font-size: 20px;
+        margin: 8px;
+        box-sizing: border-box;
+        font-weight: bold;
+      }
+      .card .number {
+        font-size: 12px;
+      }
+      .card .name {
+        margin: 32px 0 0 0 ;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="form">
+      <p>シャッフルするテキストを入れてください(改行区切り)</p>
+      <textarea></textarea>
+    </div>
+    <div class="cards">
+    </div>
+    <div class="button-container">
+      <button onclick="somethingDo()">シャッフル！</button>
+    </div>
+
+    <script>
+      var data = [
+      ]
+      var doing = false
+      var interval
+
+      function somethingDo() {
+        var button = document.querySelector('button')
+        var form = document.querySelector('.form')
+        var textarea = document.querySelector('textarea')
+        if (doing) {
+          doing = false
+          button.innerText = 'シャッフル！'
+          clearInterval(interval)
+        } else {
+          doing = true
+          if (data.length == 0) {
+            data = textarea.value.split('\n')
+            form.style.display = 'none'
+          }
+          button.innerText = 'ストップ！'
+          interval = setInterval(function() {
+            data = shuffle(data)
+            update()
+          }, 1000/60)
+        }
+      }
+      function shuffle(arr) {
+        var a = arr.slice();
+        for (var i = a.length-1; i >= 0; i--) {
+          var r = Math.floor(i * Math.random())
+          var tmp = a[i]
+          a[i] = a[r]
+          a[r] = tmp
+        }
+        return a
+      }
+      var cards = []
+      function update() {
+        var container = document.querySelector('.cards')
+        for (var i = cards.length-1; i >= 0; i--) {
+          container.removeChild(cards[i])
+        }
+        cards = []
+
+        for (var i = 0; i < data.length; i++) {
+          var card = document.createElement('div')
+          card.className = "card"
+          card.innerHTML = '<div class="number">'+(i+1)+'</div><div class="name">'+data[i]+'</div>'
+          container.appendChild(card)
+          cards.push(card)
+        }
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        update()
+      }, false)
+    </script>
+  </body>
+
+</html>
